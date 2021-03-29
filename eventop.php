@@ -228,8 +228,12 @@ if($_GET["s"] != '' and $_GET["t"] != ''){
 
 					<?php
 					
+
+
+					// a_ sono allegati?
+
 					//***************
-					// fk_richiedente --> r_conpub_anagrichiedenti
+					// fk_richiedente --> r_conpub_anagrichiedenti (va fatto con Jquery vedi esempio provincia --> comune )
 					//***************				
 					} else if ($r['column_name']=='fk_richiedente') {
 					$normativa = 'r_conpub_anagrichiedenti';
@@ -394,10 +398,20 @@ if($_GET["s"] != '' and $_GET["t"] != ''){
   
 				<?php } else if ($r['data_type']=='boolean') { ?>
 				<div class="form-group col-lg-6">
-                <label for="<?php echo $r['column_name']?>"> <?php echo $r['column_name']?> </label> * <br>
+                <label for="<?php echo $r['column_name']?>"> <?php echo $r['column_name']?> </label> 
+				<?php
+				if ($r['is_nullable']=='NO'){
+            			echo '*';
+            	} ?>
+				<br>
 				<?php
                 //if($r0[$r['column_name']]=='t'){
-					echo '<label class="radio-inline"><input type="radio" name="'.$r['column_name'].'" value="t" required> Vero </label> ';
+					echo '<label class="radio-inline"><input type="radio" name="'.$r['column_name'].'" value="t" ';
+					   
+					if ($r['is_nullable']=='NO'){
+            			echo 'required=""';
+            		}
+					echo '> Vero </label> ';
 					echo ' <label class="radio-inline"><input type="radio" name="'.$r['column_name'].'" value="f"> Falso </label>';
 				//} else {
 				//	echo '<label class="radio-inline"><input type="radio" name="'.$r['column_name'].'" value="t"> Vero </label>';
