@@ -9,6 +9,7 @@ if(!$conn) {
 } else {
 	//$idcivico=$_GET["id"];
 	$tabella = pg_escape_string($_GET["t"]);
+	$tabella_ok=str_replace('t_','',$tabella);
 	$campo = pg_escape_string($_GET["c"]);
 	$campo_ok=str_replace('d_','',$campo);
 	$campo_ok=str_replace('fk_','',$campo_ok);
@@ -18,7 +19,7 @@ if(!$conn) {
 	if ($campo == 'd_lato'){
 		$query="SELECT * From normativa.lato;";
 	} else {
-		$query="SELECT * From normativa.".$tabella."_".$campo_ok.";";
+		$query="SELECT * From normativa.".$tabella_ok."_".$campo_ok.";";
     }
     //echo $query;
 	$result = pg_query($conn, $query);
