@@ -1,8 +1,16 @@
 # cs_editing
+
 - pagine editing DB Catasto Strade
 - WS per interazione con altri servizi
     - richiesta json dati 
     - editing su DB tramite POST request
+
+I WS sono organizzati nei seguenti script:
+    - get_coordinate.php
+    - get_decodifica.php
+    - get_progressiva.php
+    - get_route_by_cod.php
+    - get_route.php
 
 Necessario file conn.php
 
