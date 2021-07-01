@@ -3,6 +3,8 @@
 session_start();
 
 require('./conn.php');
+/*Data una coppia di coordinate geografche (lon, lat)
+ il WS get_progressiva restituisce la progressiva e il codice strada*/ 
 
 if(!$conn) {
     die('Connessione fallita !<br />');
