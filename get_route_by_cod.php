@@ -6,6 +6,9 @@ session_start();
 $cod=pg_escape_string($_GET['cod']);  
 
 require('./conn.php');
+/*Dato un codice strada restituisce 
+nome del layer,  crs, denominazione_ufficiale, 
+prog_ini, prog_fin, descrizione, note, geometria*/ 
 
 if(!$conn) {
     die('Connessione fallita !<br />');
