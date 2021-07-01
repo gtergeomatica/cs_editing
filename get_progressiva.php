@@ -4,7 +4,7 @@ session_start();
 
 require('./conn.php');
 /*Data una coppia di coordinate geografche (lon, lat)
- il servizio get_progressiva restituisce la progressiva e il codice strada*/ 
+ il servizio get_progressiva restituisce la progressiva, il codice strada e le coordinate del punto non snappato*/ 
 
 if(!$conn) {
     die('Connessione fallita !<br />');
@@ -45,7 +45,7 @@ if(!$conn) {
                 st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),32632) 
             )
         )
-    )*ST_Length(v.geom))::numeric,0) as progressiva, v.cod_strada 
+    )*ST_Length(v.geom))::numeric,0) as progressiva, v.cod_strada, $lon as input_lon, $lat as input_lat 
     FROM geometrie.elementi_stradali v 
     order by ST_Distance( v.geom , st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),32632) )
     limit 1;";
