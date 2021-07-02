@@ -34,6 +34,7 @@ if(!$conn) {
     order by ST_Distance( v.geom , st_transform(ST_GeomFromText(\'POINT($3 $4 0)\',4326),32632) )
     limit 1;';*/
                	
+    /* query funzionante --RA
     $query_progressiva= "SELECT round(v.prog_ini::numeric, 0)+
     round((
     ST_LineLocatePoint(
@@ -48,7 +49,31 @@ if(!$conn) {
     )*ST_Length(v.geom))::numeric,0) as progressiva, v.cod_strada, $lon as input_lon, $lat as input_lat 
     FROM geometrie.elementi_stradali v 
     order by ST_Distance( v.geom , st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),32632) )
-    limit 1;";
+    limit 1;";*/
+
+    $query_progressiva= "with prog as (
+        SELECT round(v.prog_ini::numeric, 0)+
+            round((
+            ST_LineLocatePoint(
+                ST_LineMerge(ST_SnapToGrid(v.geom,1)),
+                ST_ClosestPoint(
+                    v.geom,
+                    ST_3DClosestPoint(
+                        v.geom , 
+                        st_transform(ST_GeomFromText('POINT(8.323499913751641 45.41112214295144 0)',4326),32632) 
+                    )
+                )
+            )*ST_Length(v.geom))::numeric,0) as progressiva, v.cod_strada, 
+            st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),32632) as input_geom
+            FROM geometrie.elementi_stradali v 
+            order by ST_Distance( v.geom , st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),32632) )
+            limit 1)
+           select prog.progressiva, prog.cod_strada, n.cod_catastale --, n.comune_nom 
+        FROM prog, normativa.comuni_corretti n
+        WHERE ST_Intersects(prog.input_geom, n.geom);";
+
+
+
 
 
     
