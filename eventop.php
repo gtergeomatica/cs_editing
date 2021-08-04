@@ -2,65 +2,30 @@
 
 session_start();
 
-require('./conn.php');
+include './conn.php';
 
 
 //$user = jAuth::getUserSession();
 
 
 
-$subtitle="FunzionalitA  amministratore - Editing tabelle decodifiche";
 
-
-$getfiltri=$_GET["f"];
-$filtro_evento_attivo=$_GET["a"];
-$schema= $_GET["s"];
-$tabella= $_GET["t"];
-$login = $_GET["login"];
+$schema= pg_escape_string($_GET["s"]);
+$tabella= pg_escape_string($_GET["t"]);
+$login = pg_escape_string($_GET["login"]);
+include 'check_login.php';
 
 
 
-
-
-//$db = new MyDB();
-
-//$db = new SQLite3('../lizmap/lizmap/var/db/jauth.db');
-//echo '<a href="../lizmap/lizmap/var/db/jauth.db"> link </a>';
-
-//echo "<br> Fin qua ok!";
-//$db = new SQLite3(':memory:');
-
-//$db = new SQLite3('../lizmap/lizmap/var/db/jauth.db');
-
-//echo "<br> Fin qua ok2!";
-
-
-$user_check=0;
-$query = "SELECT login, id_aclgrp FROM public.jacl2_user_group WHERE login = '".$login."';";
-//print $query;
-$result = pg_query($conn_l, $query);
-while($r = pg_fetch_assoc($result)) {
-	if ($r['id_aclgrp']=='admins' OR $r['id_aclgrp']=='cs_editor_group' ){
-		$user_check=1; 
-	}
-}
-
-
-if ($user_check==1){
-	echo '<i class="fas fa-user-check"></i> Utente con i permessi di editing'; 
-} else {
-	echo '<i class="fas fa-user-times"></i> Utente privo dei permessi di editing'; 
-	exit;
-}
-
+#$eventop=substr($tabella,2);
 
 $eventop0 = explode("_", $tabella);
 $eventop = $eventop0[1];
 
 
+$tipo=substr($tabella, 0,2);
+//echo $tipo;
 
-
-//echo $filtro_evento_attivo; 
 
 
 $uri=basename($_SERVER['REQUEST_URI']);
@@ -109,9 +74,14 @@ if($_GET["s"] != '' and $_GET["t"] != ''){
      	<div class="row">
 
 
-            <h4><i class="fas fa-edit"></i> Nuovo elemento nella tabella <i><?php echo $schema;?>.<?php echo $tabella;?> (<?php echo $eventop;?>)</i> - 
-            <a href="./eventop.php?login=<?php echo $login;?>" class="btn btn-warning"><i class="fas fa-redo-alt"></i> Cambia evento puntuale da editare</a>
-            
+            <h4><i class="fas fa-edit"></i> Nuovo elemento nella tabella 
+			<i><?php echo $schema;?>.<?php echo $tabella;?></i> - 
+            <?php
+			if ($tipo=='t_'){
+			?>
+				<a href="./eventop.php?login=<?php echo $login;?>" class="btn btn-warning">
+				<i class="fas fa-redo-alt"></i> Cambia evento puntuale da editare</a>
+            <?php } ?>
             </h4> 
 
       </div>
@@ -450,7 +420,9 @@ if($_GET["s"] != '' and $_GET["t"] != ''){
 ?>            
 
 
-
+<?php
+	if ($tipo=='t_'){
+?>
 <hr>
 
 <section id="c_t">
@@ -513,7 +485,7 @@ if($_GET["s"] != '' and $_GET["t"] != ''){
 
 
 </section>
-
+<?php } ?>
             
             
     </div>

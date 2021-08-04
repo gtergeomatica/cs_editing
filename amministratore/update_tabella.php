@@ -4,8 +4,9 @@ session_start();
 
 include '../conn.php';
 
-$table= $_GET["t"];
-$schema= $_GET["s"];
+$table=pg_escape_string($_GET["t"]);
+$schema=pg_escape_string($_GET["s"]);
+$id=pg_escape_string($_GET["id"]);
 
 
 
@@ -21,7 +22,7 @@ echo "<br>";
 $query = "UPDATE ".$schema.".".$table." SET";
 
 foreach ($_POST as $param_name => $param_val) {
-	if ($param_name !='id') {
+	if ($param_name !='id' OR $param_name !='d_fase_proc' ) {
 		if ($i > 1){
 			$query = $query.",";
 		}
@@ -35,22 +36,29 @@ foreach ($_POST as $param_name => $param_val) {
    }
 }
 if ($table=='r_pubblicita'){
-	$query = $query." WHERE id_pubblicita=".$_GET["id"].";";
+	$query = $query." WHERE id_pubblicita=$1;";
 } else if ($table=='r_segnalefisico') {
-	$query = $query." WHERE id_segnale_fisico=".$_GET["id"].";";
+	$query = $query." WHERE id_segnale_fisico=$1;";
+} else if ($table=='r_conpub_proc') {
+	$query = $query." WHERE id=$1;";
 } else {
-	echo "Tabella non supportata consultare gli amministratori di sistema";
+	echo "Tabella ".$table." non supportata consultare gli amministratori di sistema";
 	exit;
 }
-echo $query;
+//echo $query;
 
 
-$result = pg_query($conn, $query);
+//$result = pg_query($conn, $query);
+
+$result=pg_prepare($conn,"edit", $query);
+
+$result=pg_execute($conn,"edit", array($id));
+
 
 //exit;
 
 // redirect verso pagina interna
-header("location: ../eventop_r_u.php?s=".$schema."&t=".$table."&id1=".$_GET['id']."");
+header("location: ../eventop_r_u.php?s=".$schema."&t=".$table."&id1=".$id."");
 
 
 ?>

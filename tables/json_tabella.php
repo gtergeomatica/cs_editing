@@ -6,24 +6,27 @@ include '../conn.php';
 $schema= pg_escape_string($_GET["s"]);
 $tabella=pg_escape_string($_GET["t"]);
 //echo $getfiltri;
-
-
+//$t=$schema.'.'.$tabella;
+//echo $t ."<br>";
 if(!$conn) {
     die('Connessione fallita !<br />');
 } else {
 	//$idcivico=$_GET["id"];
-	$query="SELECT * From $1.$2;";
+    $query="SELECT * FROM $schema.$tabella";
+    $result = pg_query($conn, $query);
+	
+    
+    /*$query='SELECT * FROM $1';
     
    //echo $query;
-	$result = pg_prepare($conn, "myquery", $query);
-    $result = pg_prepare($conn, "myquery", array($schema, $tabella));
+	$result = pg_prepare($conn, "my_query", $query);
+    $result = pg_execute($conn, "my_query", array($t));*/
 	#echo $query;
 	#exit;
 	$rows = array();
 	while($r = pg_fetch_assoc($result)) {
     		$rows[] = $r;
 	}
-	pg_close($conn);
 	#echo $rows ;
 	if (empty($rows)==FALSE){
 		//print $rows;
@@ -31,6 +34,8 @@ if(!$conn) {
 	} else {
 		echo "[{\"NOTE\":'No data'}]";
 	}
+	pg_close($conn);
+
 }
 
 ?>

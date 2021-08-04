@@ -9,16 +9,16 @@ session_start();
 $subtitle="FunzionalitA  amministratore - Editing tabelle decodifiche";
 
 
-$getfiltri=$_GET["f"];
-$filtro_evento_attivo=$_GET["a"];
-$schema= $_GET["s"];
-$tabella= $_GET["t"];
+$getfiltri=pg_escape_string($_GET["f"]);
+$filtro_evento_attivo=pg_escape_string($_GET["a"]);
+$schema= pg_escape_string($_GET["s"]);
+$tabella= pg_escape_string($_GET["t"]);
 //$login = $_GET["login"];
 $login = 'catastostrade';
 // $id e l'id del gruppo 
 //$id1 e l'id dell'elemento 
-$id = $_GET["id0"];
-$id1= $_GET["id1"];
+$id = pg_escape_string($_GET["id0"]);
+$id1= pg_escape_string($_GET["id1"]);
 
 
 $eventop0 = explode("_", $tabella);
@@ -97,8 +97,10 @@ if($_GET["s"] != '' and $_GET["t"] != ''){
 				$query0="SELECT * From ".$schema.".".$tabella." where id_pubblicita=".$id1.";";
 			} else if (	$tabella=='r_segnalefisico'){
 				$query0="SELECT * From ".$schema.".".$tabella." where id_segnale_fisico=".$id1.";";
+			} else if (	$tabella=='r_conpub_proc'){
+				$query0="SELECT * From ".$schema.".".$tabella." where id=".$id1.";";
 			} else {
-				echo "Decodifica tabella non supportata. contattare l'amministratore di sistema";
+				echo "Tabella ".$tabella." non supportata. contattare l'amministratore di sistema";
 			}
 			//echo $query0;
 			$result0 = pg_query($conn, $query0);

@@ -60,6 +60,14 @@ function integerToRoman($integer)
     
     
     
+
+
+     <!-- Bootstrap Table CSS -->
+	<link rel="stylesheet" href="./bootstrap-table/dist/bootstrap-table.min.css" >
+	<!--link rel="stylesheet" href="./bootstrap-table/dist/extensions/export/bootstrap-table-export.css" -->
+	<link rel="stylesheet" href="./bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control.css" >
+
+
     
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -69,6 +77,10 @@ function integerToRoman($integer)
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+
+    <!-- jQuery -->
+<script src="jquery/jquery-3.6.0.min.js"></script>
+<!--script src="./jquery/dist/jquery.min.js"></script-->
 
 
 <?php
