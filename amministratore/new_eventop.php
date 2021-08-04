@@ -1,5 +1,7 @@
 <?php
 
+// WS per inseirmento dati
+
 session_start();
 
 include '../conn.php';
