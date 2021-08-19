@@ -13,6 +13,12 @@ if(!$conn) {
 	$campo = pg_escape_string($_GET["c"]);
 	$campo_ok=str_replace('d_','',$campo);
 	$campo_ok=str_replace('fk_','',$campo_ok);
+	//tabelle relative alle pubbblicità
+	$tabelle_conpub = array('t_con_pubblicita', 'r_conpub_mod', 'r_conpub_anagrichiedenti', 't_conpub_anag_ditte');
+    if (in_array($tabella, $tabelle_conpub)){
+		$tabella_ok = 'conpub';  
+	};
+
 	if ($tabella =='' or $campo ==''){
 		die('[{"ERROR":"Il WS richiede come parametri di input il nome della tabella (t) e il nome del campo da decodificare (c). Verifica di averli correttamente inseriti"}]');
 	}
@@ -23,9 +29,9 @@ if(!$conn) {
     }
     //echo $query;
 
-    //$result = pg_query($conn, $query);
-    $result=pg_prepare($conn, "myq", $query);
-    $result=pg_execute($conn, "myq", array());
+    $result = pg_query($conn, $query);
+    //$result=pg_prepare($conn, "myq", $query);
+    //$result=pg_execute($conn, "myq", array());
 	#echo $query;
 	#exit;
 	$rows = array();
