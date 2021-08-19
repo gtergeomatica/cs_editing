@@ -58,19 +58,23 @@ if(!$conn) {
                 ST_LineMerge(ST_SnapToGrid(v.geom,1)),
                 ST_ClosestPoint(
                     v.geom,
-                    ST_3DClosestPoint(
+                    ST_ClosestPoint(
                         v.geom , 
-                        st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),32632) 
+                        st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),25832) 
                     )
                 )
             )*ST_Length(v.geom))::numeric,0) as progressiva, v.cod_strada, 
-            st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),32632) as input_geom
+            st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),25832) as input_geom
             FROM geometrie.elementi_stradali v 
-            order by ST_Distance( v.geom , st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),32632) )
+            order by ST_Distance( v.geom , st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),25832) )
             limit 1)
-           select prog.progressiva, prog.cod_strada, n.cod_catastale, $lon as input_lon, $lat as input_lat  
-        FROM prog, normativa.comuni_corretti n
-        WHERE ST_Intersects(prog.input_geom, n.geom);";
+            select prog.progressiva, prog.cod_strada, $lon as input_lon, $lat as input_lat  
+            FROM prog;";
+
+
+           //select prog.progressiva, prog.cod_strada, n.cod_catastale, $lon as input_lon, $lat as input_lat  
+           //FROM prog, normativa.comuni_corretti n
+           //WHERE ST_Intersects(prog.input_geom, n.geom);";
 
 
 
