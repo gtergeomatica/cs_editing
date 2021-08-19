@@ -22,7 +22,9 @@ if(!$conn) {
         ORDER BY cod_strada";
         
         //echo $query;
-        $result = pg_query($conn, $query);
+        //$result = pg_query($conn, $query);
+        $result=pg_prepare($conn, "myq", $query);
+        $result=pg_execute($conn, "myq", array());
         #echo $query;
         #exit;
         $rows = array();
@@ -107,7 +109,10 @@ if(!$conn) {
         ORDER BY cod_strada";
         
         //echo $query;
-        $result = pg_query($conn, $query);
+        //$result = pg_query($conn, $query);
+        $result=pg_prepare($conn, "myq", $query);
+        $result=pg_execute($conn, "myq", array());
+
         #echo $query;
         #exit;
         $rows = array();
