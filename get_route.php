@@ -13,12 +13,12 @@ if(!$conn) {
 	//$idcivico=$_GET["id"];
 	if ($type=='geo'){
 
-        $query="SELECT cod_strada, denominazione_ufficiale, 
-        prog_ini, prog_fin, descrizione, note, 
+        $query="SELECT cod_strada, denom_uff, 
+        round(prog_ini, 0), round(prog_fin, 0), note,
         st_asgeojson(st_curvetoline(st_transform(geom, 4326))) as geometry
         FROM geometrie.route 
-        WHERE flag_raccordo ='f' AND flag_rotonda ='f' 
-        AND data_elimi is null AND data_cessione is null
+        WHERE data_elimi is null and data_cessione is null
+        and ges = 3
         ORDER BY cod_strada";
         
         //echo $query;
@@ -43,10 +43,9 @@ if(!$conn) {
             $row2 = array();
             $array2 = array (
                 "cod_strada" => $r["cod_strada"],
-                "denominazione_ufficiale" => $r["denominazione_ufficiale"], 
+                "denominazione_ufficiale" => $r["denom_uff"], 
                 "prog_ini" => $r["prog_ini"], 
                 "prog_fin" => $r["prog_fin"], 
-                "descrizione" => $r["descrizione"],
                 "note"  => $r["note"]
             );
             $row2[] = $array2;
@@ -100,11 +99,11 @@ if(!$conn) {
             echo "[{\"NOTE\":'No data'}]";
         }
     } else {
-        $query="SELECT cod_strada, denominazione_ufficiale, 
-        prog_ini, prog_fin, descrizione, note
+        $query="SELECT cod_strada, denom_uff, 
+        prog_ini, prog_fin, note
         FROM geometrie.route 
-        WHERE flag_raccordo ='f' AND flag_rotonda ='f' 
-        AND data_elimi is null AND data_cessione is null
+        WHERE data_elimi is null and data_cessione is null
+        and ges = 3
         ORDER BY cod_strada";
         
         //echo $query;
