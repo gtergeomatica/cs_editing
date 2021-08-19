@@ -14,7 +14,7 @@ if(!$conn) {
 	if ($type=='geo'){
 
         $query="SELECT cod_strada, denom_uff, 
-        round(prog_ini, 0), round(prog_fin, 0), note,
+        prog_ini::integer, prog_fin::integer, note,
         st_asgeojson(st_curvetoline(st_transform(geom, 4326))) as geometry
         FROM geometrie.route 
         WHERE data_elimi is null and data_cessione is null
@@ -100,7 +100,7 @@ if(!$conn) {
         }
     } else {
         $query="SELECT cod_strada, denom_uff, 
-        prog_ini, prog_fin, note
+        prog_ini::integer, prog_fin::integer, note
         FROM geometrie.route 
         WHERE data_elimi is null and data_cessione is null
         and ges = 3
