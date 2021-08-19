@@ -22,7 +22,10 @@ if(!$conn) {
 		$query="SELECT * From normativa.".$tabella_ok."_".$campo_ok.";";
     }
     //echo $query;
-	$result = pg_query($conn, $query);
+
+    //$result = pg_query($conn, $query);
+    $result=pg_prepare($conn, "myq", $query);
+    $result=pg_execute($conn, "myq", array());
 	#echo $query;
 	#exit;
 	$rows = array();
