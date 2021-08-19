@@ -13,8 +13,8 @@ prog_ini, prog_fin, descrizione, note, geometria*/
 if(!$conn) {
     die('Connessione fallita !<br />');
 } else {
-    $query="SELECT cod_strada, denominazione_ufficiale, 
-    prog_ini, prog_fin, descrizione, note, 
+    $query="SELECT cod_strada, denom_uff as denominazione_ufficiale, 
+    prog_ini::integer, prog_fin::integer, note, 
     st_asgeojson(st_curvetoline(st_transform(geom, 4326))) as geometry
     FROM geometrie.route 
     WHERE cod_strada = $1;";
@@ -48,8 +48,7 @@ if(!$conn) {
             "denominazione_ufficiale" => $r["denominazione_ufficiale"], 
             "prog_ini" => $r["prog_ini"], 
             "prog_fin" => $r["prog_fin"], 
-            "descrizione" => $r["descrizione"],
-            "note"  => $r["note"]
+            "note" => $r["note"]
         );
         $row2[] = $array2;
         $geom=str_replace("[{", "{",
