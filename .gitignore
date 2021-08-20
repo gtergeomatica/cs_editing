@@ -1,2 +1,6 @@
 conn.php
 *.php~
+tracciato/credenziali.py
+*.csv
+
+tracciato/__pycache__/credenziali.cpython-36.pyc
