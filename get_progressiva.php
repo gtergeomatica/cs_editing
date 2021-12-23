@@ -15,43 +15,8 @@ if(!$conn) {
 	if ($lat =='' or $lon ==''){
 		die('[{"ERROR":"Il WS richiede come parametri sia la latitudine che la longitudine. Verifica di averli correttamente inseriti"}]');
 	}
-	/*$query="SELECT ST_3DClosestPoint(st_transform(v.geom,4326), ST_GeomFromText('POINT($1,$2))),
-    FROM geometrie.elementi_stradali v";*/
     
-    /*$query_progressiva= 'SELECT round(v.prog_ini::numeric, 0)+
-    round((
-    ST_LineLocatePoint(
-        ST_LineMerge(ST_SnapToGrid(v.geom,1)),
-        ST_ClosestPoint(
-            v.geom,
-            ST_3DClosestPoint(
-                v.geom , 
-                st_transform(ST_GeomFromText(\'POINT($1 $2 0)\',4326),32632) 
-            )
-        )
-    )*ST_Length(v.geom))::numeric,0) as progressiva, v.cod_strada 
-    FROM geometrie.elementi_stradali v 
-    order by ST_Distance( v.geom , st_transform(ST_GeomFromText(\'POINT($3 $4 0)\',4326),32632) )
-    limit 1;';*/
-               	
-    /* query funzionante --RA
-    $query_progressiva= "SELECT round(v.prog_ini::numeric, 0)+
-    round((
-    ST_LineLocatePoint(
-        ST_LineMerge(ST_SnapToGrid(v.geom,1)),
-        ST_ClosestPoint(
-            v.geom,
-            ST_3DClosestPoint(
-                v.geom , 
-                st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),32632) 
-            )
-        )
-    )*ST_Length(v.geom))::numeric,0) as progressiva, v.cod_strada, $lon as input_lon, $lat as input_lat 
-    FROM geometrie.elementi_stradali v 
-    order by ST_Distance( v.geom , st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),32632) )
-    limit 1;";*/
-
-    $query_progressiva= "with prog as (
+    /*$query_progressiva= "with prog as (
         SELECT round(v.prog_ini::numeric, 0)+
             round((
             ST_LineLocatePoint(
@@ -72,20 +37,45 @@ if(!$conn) {
         FROM prog, normativa.comuni_corretti n
         WHERE ST_Intersects(prog.input_geom, n.geom);";
 
+*/
+
+        
+        $query_progressiva= "with prog as (
+            SELECT round(v.prog_ini::numeric, 0)+
+                round((
+                ST_LineLocatePoint(
+                    ST_LineMerge(ST_SnapToGrid(v.geom,1)),
+                    ST_ClosestPoint(
+                        v.geom,
+                        ST_3DClosestPoint(
+                            v.geom , 
+                            st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),32632) 
+                        )
+                    )
+                )*ST_Length(v.geom))::numeric,0) as progressiva, v.cod_strada, 
+                st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),32632) as input_geom
+                FROM geometrie.elementi_stradali v 
+                order by ST_Distance( v.geom , st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),32632) )
+                limit 1),
+     flag as (select 
+             st_dwithin(tc.geom, snapped.geom, 5) as f_centro_abitato  --soglia di 5 metri come margine di errore
+             from  eventol.t_centriabitati tc ,
+                    (select ST_ClosestPoint(v.geom , 
+                                            st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),32632) 
+                     ) as geom 
+                     FROM geometrie.elementi_stradali v 
+                     order by ST_Distance( v.geom , st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),32632) )
+                     limit 1) as snapped
+                     order by ST_Distance( tc.geom , st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),32632))
+                     limit 1            
+                ) 
+            select prog.progressiva, prog.cod_strada, n.cod_catastale, flag.f_centro_abitato, $lon as input_lon, $lat as input_lat  
+            FROM prog, normativa.comuni_corretti n, flag
+            WHERE ST_Intersects(prog.input_geom, n.geom);";
 
 
 
 
-    
-    /*cod_strada=(SELECT v.cod_strada
-            FROM geometrie.elementi_stradali v, eventop.t_cippi c 
-            WHERE c.id=new.id
-            order by ST_Distance(v.geom, c.geom)  limit 1),*/
-
-    //echo $query_progressiva;
-    //echo "<br>";
-    /*$result=pg_prepare($conn, "myquery", $query_progressiva);
-    $result=pg_execute($conn, "myquery", array($lon,$lat,$lon,$lat));*/
     $result = pg_query($conn, $query_progressiva);
 	#echo $query;
 	#exit;
