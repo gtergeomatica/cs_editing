@@ -15,7 +15,8 @@ if(!$conn) {
 
         $query="SELECT cod_strada, denom_uff, 
         prog_ini::integer, prog_fin::integer, note,
-        st_asgeojson(st_curvetoline(st_transform(geom, 4326))) as geometry
+        st_asgeojson(st_curvetoline(st_transform(geom, 4326))) as geometry,
+        st_asgeojson(ST_Envelope(st_curvetoline(st_transform(geom, 4326)))) as bbox
         FROM geometrie.route 
         WHERE data_elimi is null and data_cessione is null
         and ges = 3
@@ -53,13 +54,19 @@ if(!$conn) {
             $row2[] = $array2;
             $geom=str_replace("[{", "{",
                 str_replace("}]","}",str_replace("\\", "",$r['geometry'])));
+
+            $box = str_replace("[{", "{",
+                str_replace("}]","}",str_replace("\\", "",$r['bbox'])));
+
             if ($k==1){
-                $geojson= $geojson.'{"type":"Feature","geometry":'.$geom;
+                $geojson= $geojson.'{"type":"Feature","geometry":'.$geom.', "bbox":'.$box;
             } else {
-                $geojson= $geojson.',{"type":"Feature","geometry":'.$geom;
+                $geojson= $geojson.',{"type":"Feature","geometry":'.$geom.', "bbox":'.$box;
             }
             $geojson= $geojson. ',"properties":'.str_replace("[{", "{",
                 str_replace("}]","}",json_encode(array_values($row2)).'}'));
+
+            
             /*$array1 = array (
                 "type" => 'Feature',
                 "geometry" => $r["geometry"],
