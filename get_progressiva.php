@@ -4,7 +4,12 @@ session_start();
 
 require('./conn.php');
 /*Data una coppia di coordinate geografche (lon, lat)
- il servizio get_progressiva restituisce la progressiva, il codice strada e le coordinate del punto non snappato*/ 
+ il servizio get_progressiva restituisce la progressiva, il codice strada e le coordinate del punto di input
+
+ Il servizio restituisce una risposta valida solo se coordinate fornite ricadono entro un buffer dal codice strada selezionato.
+ $buffer è un paramentro opzionale
+ 
+ */ 
 
 if(!$conn) {
     die('Connessione fallita !<br />');
@@ -12,9 +17,17 @@ if(!$conn) {
 	//$idcivico=$_GET["id"];
 	$lat = pg_escape_string($_GET["lat"]);
 	$lon = pg_escape_string($_GET["lon"]);
-	if ($lat =='' or $lon ==''){
-		die('[{"ERROR":"Il WS richiede come parametri sia la latitudine che la longitudine. Verifica di averli correttamente inseriti"}]');
+    $cod_strada = pg_escape_string($_GET["cod_strada"]);
+    $buffer = pg_escape_string($_GET["buffer"]);
+	if ($lat =='' or $lon =='' or $cod_strada == ''){
+		die('[{"ERROR":"Il WS richiede come parametri la latitudine, la longitudine e il codice della strada. Verifica di averli correttamente inseriti"}]');
 	}
+
+     
+    if ($buffer==''){
+        $buffer= 1000;
+    }
+
 	/*$query="SELECT ST_3DClosestPoint(st_transform(v.geom,4326), ST_GeomFromText('POINT($1,$2))),
     FROM geometrie.elementi_stradali v";*/
     
@@ -66,6 +79,8 @@ if(!$conn) {
             )*ST_Length(v.geom))::numeric,0) as progressiva, v.cod_strada, 
             st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),25832) as input_geom
             FROM geometrie.elementi_stradali v 
+            where cod_strada = '$cod_strada'
+            and ST_Distance( v.geom , st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),25832) ) <= $buffer
             order by ST_Distance( v.geom , st_transform(ST_GeomFromText('POINT(".$lon." ".$lat." 0)',4326),25832) )
             limit 1)
             select prog.progressiva, prog.cod_strada, $lon as input_lon, $lat as input_lat  
